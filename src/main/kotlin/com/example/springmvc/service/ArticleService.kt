@@ -1,5 +1,6 @@
 package com.example.springmvc.service
 
+import com.example.springmvc.exception.NoArticleFound
 import com.example.springmvc.model.Article
 import com.example.springmvc.repository.ArticleRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -13,7 +14,7 @@ class ArticleService(
 ) {
 
     fun get(id: Long): Article {
-        return repository.findByIdOrNull(id) ?: throw NoSuchElementException("No article found (id: $id)")
+        return repository.findByIdOrNull(id) ?: throw NoArticleFound("No article found (id: $id)")
     }
 
     fun getAll(): List<Article> {
@@ -24,7 +25,7 @@ class ArticleService(
         return if (title.isNullOrEmpty()) {
             repository.findAll()
         } else {
-            repository.findByTitleContains("%$title%")
+            repository.findByTitleContains("$title")
         }
     }
 
@@ -44,7 +45,7 @@ class ArticleService(
             request.body?.let { article.body = it }
             request.authorId?.let { article.authorId = it }
             article
-        } ?: throw NoSuchElementException("No article found (id: $id)")
+        } ?: throw NoArticleFound("No article found (id: $id)")
     }
 
     @Transactional
